@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">@color/bg01</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="primary">#ff4401</color>
+    <color name="btn_enable_false">#b6b5b6</color>
+    <color name="text_un_select">#727072</color>
+    <color name="white_color">#FFFFFF</color>
+
+    <color name="white_color_opacity_52">#82FFFFFF</color>
+
+    <color name="bg01">#120e0e</color>
+
+    <color name="line_color">#333333</color>
+    <color name="text_black">#100e12</color>
+
+</resources>
