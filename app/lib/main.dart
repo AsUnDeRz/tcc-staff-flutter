@@ -1,3 +1,4 @@
+import 'package:app/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -71,6 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Scaffold.of(context).showSnackBar(snackbar);
   }
 
+  void onClickLogin() {
+    Navigator.push(context, new MaterialPageRoute(builder: (__) => new LoginScreen()));
+    print('Test onClick');
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -93,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(16.0),
               child: new RaisedButton(
                 onPressed: () => _openNewPage(),
-                child: new Text("Open Second Activity / UIViewController"),
+                child: new Text("Open Camera Native"),
                 color: Colors.deepPurple,
                 textColor: Colors.white,
               ),
@@ -101,8 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
             new Padding(
               padding: const EdgeInsets.all(16.0),
               child: new RaisedButton(
-                onPressed: () => _showDialog(),
-                child: new Text("Show Dialog / Alert"),
+                onPressed: () => onClickLogin(),
+                child: new Text("Open Login"),
                 color: Colors.blueAccent,
                 textColor: Colors.white,
               ),
