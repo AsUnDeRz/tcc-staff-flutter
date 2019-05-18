@@ -67,7 +67,6 @@ class LoginScreenState extends State<LoginScreen> {
               child: Text("เข้าใช้งานระบบ", style: TextStyle(color: Colors.white, fontSize: 16.0)),
             ),
           )));
-
   /*
   Bottom
    */
