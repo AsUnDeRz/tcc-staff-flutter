@@ -1,69 +1,53 @@
+import 'package:app/model/authen_entity.dart';
+import 'package:app/service/api.dart';
+import 'package:app/service/jwt_utils.dart';
+import 'package:app/service/token_manager.dart';
 import 'package:flutter/widgets.dart';
 
-//enum Status { Uninitialized, Authenticated, Authenticating, Unauthenticated }
-//
-//class UserRepository with ChangeNotifier {
-//  FirebaseAuth _auth;
-//  FirebaseUser _user;
-//  GoogleSignIn _googleSignIn;
-//  Status _status = Status.Uninitialized;
-//
-//  UserRepository.instance()
-//      : _auth = FirebaseAuth.instance,
-//        _googleSignIn = GoogleSignIn() {
-//    _auth.onAuthStateChanged.listen(_onAuthStateChanged);
-//  }
-//
-//  Status get status => _status;
-//
-//  Future<bool> signIn(String email, String password) async {
-//    try {
-//      _status = Status.Authenticating;
-//      notifyListeners();
-//      await _auth.signInWithEmailAndPassword(email: email, password: password);
-//      return true;
-//    } catch (e) {
-//      _status = Status.Unauthenticated;
-//      notifyListeners();
-//      return false;
-//    }
-//  }
-//
-//  Future<bool> signInWithGoogle() async {
-//    try {
-//      _status = Status.Authenticating;
-//      notifyListeners();
-//      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-//      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-//      final AuthCredential credential = GoogleAuthProvider.getCredential(
-//        accessToken: googleAuth.accessToken,
-//        idToken: googleAuth.idToken,
-//      );
-//      await _auth.signInWithCredential(credential);
-//      return true;
-//    } catch (e) {
-//      print(e);
-//      _status = Status.Unauthenticated;
-//      notifyListeners();
-//      return false;
-//    }
-//  }
-//
-//  Future signOut() async {
-//    _auth.signOut();
-//    _googleSignIn.signOut();
-//    _status = Status.Unauthenticated;
-//    notifyListeners();
-//    return Future.delayed(Duration.zero);
-//  }
-//
-//  Future<void> _onAuthStateChanged(FirebaseUser firebaseUser) async {
-//    if (firebaseUser == null) {
-//      _status = Status.Unauthenticated;
-//    } else {
-//      _user = firebaseUser;
-//      _status = Status.Authenticated;
-//    }
-//    notifyListeners();
-//  }
-//}
+enum Status { Uninitialized, Authenticated, Authenticating, Unauthenticated }
+
+class UserRepository with ChangeNotifier {
+  UserApiProvider apiProvider;
+  Status _status = Status.Uninitialized;
+  JwtUtils jwtUtils;
+  TokenManager tokenManager;
+  Status get status => _status;
+
+  UserRepository.instance()
+      : apiProvider = UserApiProvider(),
+        tokenManager = TokenManager.instance(),
+        jwtUtils = JwtUtils();
+
+  Future<AuthenEntity> authen(String username, String password) async {
+    try {
+      _status = Status.Authenticating;
+      notifyListeners();
+      print(_status);
+
+      AuthenEntity _authenEntity = await apiProvider.authen(username, password);
+      if (_authenEntity.data != null) {
+        _status = Status.Authenticated;
+        notifyListeners();
+        print(_status);
+
+        print("uid = " + jwtUtils.getUid(_authenEntity.data.accessToken));
+        print("exp = ${jwtUtils.getExp(_authenEntity.data.accessToken)}");
+        print(
+            "isToken expired ${tokenManager.isTokenExpired(jwtUtils.getExp(_authenEntity.data.accessToken))}");
+        return _authenEntity;
+      } else {
+        _status = Status.Unauthenticated;
+        notifyListeners();
+        print(_status);
+
+        return _authenEntity;
+      }
+    } catch (e) {
+      _status = Status.Unauthenticated;
+      notifyListeners();
+      print(_status);
+
+      return null;
+    }
+  }
+}

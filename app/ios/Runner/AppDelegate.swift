@@ -5,6 +5,7 @@ import Flutter
 @objc class AppDelegate: FlutterAppDelegate {
     
     var flutterVC: FlutterViewController!
+    var channel: FlutterMethodChannel!
 
     
   override func application(
@@ -45,7 +46,10 @@ import Flutter
             vc.navigationItem.title = param
         }
         
-        flutterVC.present(nav, animated: true, completion: nil)
+//        flutterVC.present(nav, animated: true, completion: nil)
+        let camera = UINavigationController(rootViewController: nav)
+        flutterVC.present(camera, animated: true, completion: nil)
+
     }
     
     private func openAlert(param: String, result: @escaping FlutterResult) {
