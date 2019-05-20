@@ -1,11 +1,15 @@
-import 'package:app/color_config.dart';
+import 'package:app/model/concert_repository.dart';
+import 'package:app/model/user_repository.dart';
 import 'package:app/screen/concert_list_screen.dart';
 import 'package:app/screen/launch_screen.dart';
 import 'package:app/screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

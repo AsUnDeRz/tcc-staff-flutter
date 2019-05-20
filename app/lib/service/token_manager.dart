@@ -1,6 +1,4 @@
 class TokenManager {
-  TokenManager.instance();
-
   bool isTokenExpired(int timeStamp) {
     if (timeStamp == null) {
       return true;

@@ -1,5 +1,8 @@
 import 'package:app/color_config.dart';
+import 'package:app/model/concert_entity.dart';
+import 'package:app/model/concert_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ConcertScreen extends StatefulWidget {
   static String routeName = "/concert";
@@ -8,43 +11,44 @@ class ConcertScreen extends StatefulWidget {
 }
 
 class ConcertScreenState extends State<ConcertScreen> {
-  Widget list() => ListView.builder(
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Widget list(List<ConcertDataRecord> concertList) => ListView.builder(
         itemBuilder: (context, position) {
           return ListTile(
-              title: Padding(
-                  child: CardConcert(
-                      "ทดสอบคอนเสิร์ต",
-                      "https://alpha-res.theconcert.co.th/w_350,h_470,c_crop/0e06483f4e34f1c1d606bdbc38c9aa16d/55d670d43e5511e9911101117567899b.png",
-                      "จำนวนบัตร : 500$position"),
-                  padding: EdgeInsets.all(2)),
+              title: Padding(child: CardConcert(concertList[position]), padding: EdgeInsets.all(2)),
               onTap: () => {onClickCard("Concert $position")});
         },
-        itemCount: 10,
+        itemCount: concertList.length,
       );
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: ColorGuide.colorPrimary,
-        title: Text("TCC Gate Agent"),
-      ),
-      body: SafeArea(child: list()),
-      resizeToAvoidBottomPadding: false,
-    );
+    return ChangeNotifierProvider<ConcertRepository>(
+        builder: (_) => ConcertRepository.instance(),
+        child: Consumer(builder: (context, ConcertRepository concert, _) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: ColorGuide.colorPrimary,
+              title: Text("TCC Gate Agent"),
+            ),
+            body: SafeArea(child: list(concert.concertList)),
+            resizeToAvoidBottomPadding: false,
+          );
+        }));
   }
 
   void onClickCard(String name) {
     Navigator.push(context, new MaterialPageRoute(builder: (__) => new ConcertDetail(name)));
-    print('Test onClick');
   }
 }
 
 class CardConcert extends StatelessWidget {
-  final String concertName;
-  final String concertImg;
-  final String concertTickets;
+  ConcertDataRecord concertDataRecord;
 
-  CardConcert(this.concertName, this.concertImg, this.concertTickets);
+  CardConcert(this.concertDataRecord);
 
   @override
   Widget build(BuildContext context) => Card(
@@ -61,7 +65,7 @@ class CardConcert extends StatelessWidget {
                     child: Padding(
                         padding: EdgeInsets.only(left: 16, top: 12, bottom: 12),
                         child: SizedBox(
-                          child: Image.network(concertImg),
+                          child: Image.network(concertDataRecord.images.first.url),
                         ))),
                 Expanded(
                     child: Padding(
@@ -71,11 +75,12 @@ class CardConcert extends StatelessWidget {
                           children: <Widget>[
                             Expanded(
                               flex: 3,
-                              child: Text(concertName, style: TextStyle(fontSize: 16)),
+                              child: Text(concertDataRecord.name,
+                                  maxLines: 3, style: TextStyle(fontSize: 16)),
                             ),
                             Expanded(
                                 child: Text(
-                              concertTickets,
+                              "จำนวนบัตรทั้งหมด ${concertDataRecord.ticketCount}",
                               style: TextStyle(fontSize: 14, color: Colors.black.withOpacity(0.5)),
                             ))
                           ],
