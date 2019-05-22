@@ -78,7 +78,7 @@ class LoginScreenState extends State<LoginScreen> {
             decoration: bgFormRegister));
   }
 
-  Widget loginButton(double screenWidth, UserRepository userRepo) => Padding(
+  Widget loginButton(double screenWidth, UserRepository userRepo, BuildContext context) => Padding(
       padding: EdgeInsets.only(left: 40, top: 8, right: 40, bottom: 8),
       child: new Container(
           alignment: Alignment.center,
@@ -87,7 +87,11 @@ class LoginScreenState extends State<LoginScreen> {
             width: screenWidth,
             child: new RaisedButton(
               onPressed: () {
-                userRepo.authen(username.text, password.text);
+                userRepo.authen(username.text, password.text).then((data) {
+                  if (data.error != null) {
+                    _showAlert(context, data.error.message);
+                  }
+                });
               },
               shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(22.5)),
               color: ColorGuide.colorPrimary,
@@ -107,7 +111,7 @@ class LoginScreenState extends State<LoginScreen> {
     final formLogin = <Widget>[
       getEditText("บัญชีผู้ใช้งาน", username),
       getEditText("รหัสผ่าน", password, isPassword: true),
-      loginButton(screenWidth, user)
+      loginButton(screenWidth, user, context)
     ];
 
     final Widget middleSection = new Expanded(

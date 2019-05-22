@@ -5,8 +5,6 @@ import 'package:app/service/share_preference.dart';
 import 'package:app/service/token_manager.dart';
 import 'package:flutter/widgets.dart';
 
-import '../locator.dart';
-
 enum Status { Uninitialized, Authenticated, Authenticating, Unauthenticated, TokenExpired }
 
 class UserRepository extends ChangeNotifier {
@@ -19,8 +17,9 @@ class UserRepository extends ChangeNotifier {
   UserRepository() {
     SharePrefInterface.getInstance().then((share) {
       var token = share.accessToken();
+      print(token);
       if (token == "") {
-        _status = Status.Uninitialized;
+        _status = Status.Unauthenticated;
         return;
       }
       if (tokenManager.isTokenExpired(jwtUtils.getExp(token))) {
@@ -29,6 +28,16 @@ class UserRepository extends ChangeNotifier {
         _status = Status.Authenticated;
       }
       print(status);
+    });
+  }
+
+  void logout() {
+    SharePrefInterface.getInstance().then((share) {
+      share.setTokenType("");
+      share.setAccessToken("");
+      share.setRefreshToken("");
+      _status = Status.Unauthenticated;
+      notifyListeners();
     });
   }
 
@@ -44,10 +53,6 @@ class UserRepository extends ChangeNotifier {
           share.setAccessToken(_authenEntity.data.accessToken);
           share.setRefreshToken(_authenEntity.data.refreshToken);
         });
-        print("uid = " + jwtUtils.getUid(_authenEntity.data.accessToken));
-        print("exp = ${jwtUtils.getExp(_authenEntity.data.accessToken)}");
-        print(
-            "isToken expired ${tokenManager.isTokenExpired(jwtUtils.getExp(_authenEntity.data.accessToken))}");
         _status = Status.Authenticated;
         notifyListeners();
         print(_status);
@@ -56,14 +61,12 @@ class UserRepository extends ChangeNotifier {
         _status = Status.Unauthenticated;
         notifyListeners();
         print(_status);
-
         return _authenEntity;
       }
     } catch (e) {
       _status = Status.Unauthenticated;
       notifyListeners();
       print(_status);
-
       return null;
     }
   }

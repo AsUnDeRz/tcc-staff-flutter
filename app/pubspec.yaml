@@ -17,6 +17,11 @@ environment:
   sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
+  qr_mobile_vision: ^0.2.2
+  path_provider: ^1.1.0
+  camera: ^0.5.2+1
+  firebase_ml_vision: ^0.8.0
+  flutter_inner_drawer: ^0.2.6
   get_it: ^1.0.3
   shared_preferences: ^0.5.2
   jaguar_jwt: ^2.1.6
@@ -34,8 +39,6 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
-  checked_yaml: ^1.0.1
-  build_runner: ^1.4.0
   json_serializable: ^2.3.0
   flutter_test:
     sdk: flutter

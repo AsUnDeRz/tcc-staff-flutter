@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import '../locator.dart';
-
 class LaunchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -16,7 +14,8 @@ class LaunchScreen extends StatelessWidget {
         builder: (context, UserRepository user, _) {
           switch (user.status) {
             case Status.Uninitialized:
-              return LoginScreen();
+              return Container(
+                  color: Colors.white, child: Center(child: CircularProgressIndicator()));
             case Status.Unauthenticated:
               return LoginScreen();
             case Status.Authenticating:
