@@ -16,10 +16,25 @@ class ConcertScreen extends StatefulWidget {
 
 class ConcertScreenState extends State<ConcertScreen> {
   final GlobalKey<InnerDrawerState> _innerDrawerKey = GlobalKey<InnerDrawerState>();
+  String concertName;
+  static const scanChannel = const MethodChannel('flutter.tcc.gate.agent');
 
   @override
   void initState() {
+    scanChannel.setMethodCallHandler(handleMethod);
     super.initState();
+  }
+
+  Future<dynamic> handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case "scan":
+        debugPrint(call.arguments);
+        return new Future.value("");
+      case "openReport":
+        debugPrint(call.arguments);
+        onOpenReport(call.arguments);
+        return new Future.value("");
+    }
   }
 
   void _open() {
@@ -58,7 +73,7 @@ class ConcertScreenState extends State<ConcertScreen> {
         itemBuilder: (context, position) {
           return ListTile(
               title: Padding(child: CardConcert(concertList[position]), padding: EdgeInsets.all(2)),
-              onTap: () => {onClickCard("Concert $position")});
+              onTap: () => {onClickCard(concertList[position].name)});
         },
         itemCount: concertList.length,
       );
@@ -97,14 +112,17 @@ class ConcertScreenState extends State<ConcertScreen> {
   }
 
   void onClickCard(String name) {
-//    _openNewPage();
+    _openNewPage(name);
+  }
+
+  void onOpenReport(String name) {
     Navigator.push(context, new MaterialPageRoute(builder: (__) => new ConcertDetail(name)));
   }
 
   static const channel = const MethodChannel("flutter.theconcert/scan");
 
-  Future<Null> _openNewPage() async {
-    final response = await channel.invokeMethod("openCamera", ["Hi From Flutter"]);
+  Future<Null> _openNewPage(String name) async {
+    final response = await channel.invokeMethod("openCamera", [name]);
     print(response);
   }
 }

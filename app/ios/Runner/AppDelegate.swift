@@ -12,7 +12,7 @@ import Flutter
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
   ) -> Bool {
-    
+
     GeneratedPluginRegistrant.register(with: self)
     initMethodChannel()
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -40,13 +40,9 @@ import Flutter
     
     private func openSecondPage(param: String) {
         let sb = UIStoryboard(name: "Scanner", bundle: nil)
-        let nav = sb.instantiateViewController(withIdentifier: "ScannerViewController")
+        let nav = sb.instantiateViewController(withIdentifier: "ScannerViewController") as! ScannerViewController
+        nav.concertName = param
         
-        if let vc = nav.childViewControllers.first as? ScannerViewController {
-            vc.navigationItem.title = param
-        }
-        
-//        flutterVC.present(nav, animated: true, completion: nil)
         let camera = UINavigationController(rootViewController: nav)
         flutterVC.present(camera, animated: true, completion: nil)
 

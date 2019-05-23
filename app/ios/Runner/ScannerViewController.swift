@@ -69,6 +69,10 @@ class ScannerViewController: UIViewController {
         }
     }
     
+    let rootView:FlutterViewController! = UIApplication.shared.keyWindow?.rootViewController as! FlutterViewController
+ 
+    var scanChannel:FlutterMethodChannel!
+    var concertName:String = ""
     var captureSession: AVCaptureSession!
     var previewLayer: AVCaptureVideoPreviewLayer!
 //    private let disposeBag = DisposeBag()
@@ -85,8 +89,13 @@ class ScannerViewController: UIViewController {
         view.backgroundColor = UIColor.black
         observeValueCount()
         setupCamera()
-        setupNavigationBar()
-        
+        scanChannel = FlutterMethodChannel(name: "flutter.tcc.gate.agent", binaryMessenger:rootView)
+    }
+    
+    @objc func handleTap(_ sender: UITapGestureRecognizer) {
+        if (captureSession?.isRunning == false) {
+            captureSession.startRunning()
+        }
     }
     
     func failed() {
@@ -98,10 +107,11 @@ class ScannerViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        let iconGroup = UIImage(named: "icons_group")
-        let rightBarButtonItem = UIBarButtonItem(image: iconGroup, style: .plain, target: self, action: #selector(openReport))
-        self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        setupNavigationBar()
+
+//        let iconGroup = UIImage(named: "icons_group")
+//        let rightBarButtonItem = UIBarButtonItem(image: iconGroup, style: .plain, target: self, action: #selector(openReport))
+//        self.navigationItem.rightBarButtonItem = rightBarButtonItem
         
         if (captureSession?.isRunning == false) {
             captureSession.startRunning()
@@ -160,6 +170,14 @@ class ScannerViewController: UIViewController {
             rootLayer.addSublayer(self.previewLayer)
             self.captureSession.startRunning()
             self.drawBoxScanner(rootLayer: rootLayer)
+            
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+            
+            self.previewContainer.addGestureRecognizer(tap)
+            
+            self.previewContainer.isUserInteractionEnabled = true
+            
         }
     }
     
@@ -216,9 +234,31 @@ class ScannerViewController: UIViewController {
     }
     
     func setupNavigationBar(){
-//        navigationItem.title = product?.name ?? ""
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+
+        self.navigationController?.navigationBar.barTintColor = UIColor.tccPrimaryRed
+        self.navigationItem.title = concertName
+
+        let buttonBack = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(handleClose))
+        buttonBack.tintColor = .white
+        self.navigationItem.leftBarButtonItem = buttonBack
+        
+        
+        let buttonReport = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(openReport))
+        buttonReport.tintColor = .white
+        self.navigationItem.rightBarButtonItem = buttonReport
     }
     
+    @objc func handleClose() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func openReport(){
+        self.dismiss(animated: true) {
+
+            self.scanChannel.invokeMethod("openReport", arguments: self.concertName)
+        }
+    }
     func observeValueCount(){
         /*
         if let id = product?.id {
@@ -232,17 +272,6 @@ class ScannerViewController: UIViewController {
  */
     }
     
-    
-    
-    @objc func openReport(){
-        /*
-        let report = ReportViewController.instantiate()
-        report.productId = "\(product?.id ?? 0)"
-        report.allTicket = Int(self.userTotalLabel?.text ?? "0") ?? 0
-        report.checkedTicket = Int(self.userScanLabel?.text ?? "0") ?? 0
-        self.navigationController?.pushViewController(report, animated: true)
- */
-    }
     
     @objc func handleFlashButton() {
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
@@ -297,6 +326,8 @@ extension ScannerViewController : AVCaptureMetadataOutputObjectsDelegate {
         if (captureSession?.isRunning == true) {
             captureSession.stopRunning()
         }
+        scanChannel.invokeMethod("scan", arguments: code)
+
         /*
         let alert = ModalNotifyViewController.instantiate()
         

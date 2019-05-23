@@ -1,16 +1,10 @@
 import 'package:app/screen/concert_list_screen.dart';
 import 'package:app/screen/launch_screen.dart';
 import 'package:app/screen/login_screen.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-List<CameraDescription> cameras;
-
 Future<void> main() async {
-  try {
-    cameras = await availableCameras();
-  } on CameraException catch (e) {}
   runApp(MyApp());
 }
 

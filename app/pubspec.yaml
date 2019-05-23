@@ -17,10 +17,6 @@ environment:
   sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
-  qr_mobile_vision: ^0.2.2
-  path_provider: ^1.1.0
-  camera: ^0.5.2+1
-  firebase_ml_vision: ^0.8.0
   flutter_inner_drawer: ^0.2.6
   get_it: ^1.0.3
   shared_preferences: ^0.5.2
